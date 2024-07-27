@@ -1,0 +1,10 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: access-management-api-config
+  namespace: onecloud-dev
+data: 
+  ENVIRONMENT: 'PRD'
+  POSTGRES_SERVER: 'tvtazrdbpg001.postgres.database.azure.com'
+  POSTGRES_DB: 'dbaccess_management'
+  POSTGRES_USER: 'user_dbaccess_management@tvtazrdbpg001'

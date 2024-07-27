@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: access-management-api-deployment
+  labels:
+    component: access-management-api
+    type: app
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      component: access-management-api
+      type: app
+  template:
+    metadata:
+      labels:
+        component: access-management-api
+        type: app
+    spec:
+      containers:
+        - name: access-management-api
+          image: tvtazracr001.azurecr.io/access-management-api:latest
+          imagePullPolicy: Always
+          command:
+            - /bin/bash
+            - -c
+            - uvicorn app.main:app --host 0.0.0.0 --port 80 --workers 4 --log-config=app/log_conf.yaml
+          envFrom:
+            - configMapRef:
+                name: access-management-api-config
+            - secretRef:
+                name: access-management-api-secrets
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+          resources:
+            requests:
+              memory: 300Mi
+              cpu: "100m"
+            limits:
+              memory: 800Mi
+              cpu: "500m"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  component: access-management-api
+                  type: app
+              topologyKey: kubernetes.io/hostname

@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: access-management-api-ingress
+  namespace: onecloud-dev
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+status:
+  loadBalancer:
+    ingress:
+      - ip: 10.200.4.220
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - access-management-api.multicloud.tivit.com
+      secretName: cert-multicloud
+  rules:
+    - host: access-management-api.multicloud.tivit.com
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: access-management-api
+                port:
+                  number: 80
