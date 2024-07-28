@@ -1,51 +1,33 @@
 version: "3.7"
-services:
-  postgres:
-    image: postgres:15-alpine
-    restart: always
-    environment:
-      POSTGRES_USER: dev-user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: dev_db
-    ports:
-      - 5432:5432
-    expose:
-      - "5432"
-    volumes:
-      - db-data:/var/lib/postgresql/data:cached
 
-  test-postgres:
+services:
+  db:
     image: postgres:15-alpine
     restart: always
     environment:
-      POSTGRES_USER: test-user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: test_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Yuri100100
+      POSTGRES_DB: acesso
     ports:
-      - 5434:5432 # Use a different port to avoid conflicts with the main database
-    expose:
-      - "5434" # Exposing the different port for clarity
+      - "5435:5432"
     volumes:
-      - test-db-data:/var/lib/postgresql/data:cached
+      - db-data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d/init.sql:/init.sql:ro
 
   backend:
     build:
-      context: backend
+      context: .
       dockerfile: Dockerfile
-    command: python app/main.py
-    tty: true
     volumes:
-      - ./backend:/backend/:cached
-      - ./.docker/.ipython:/root/.ipython:cached
+      - ./backend:/fastapi-app:cached
     environment:
-      PYTHONPATH: .
-      DATABASE_URL: "postgresql+asyncpg://dev-user:password@postgres:5432/dev_db"
+      PYTHONPATH: /fastapi-app
+      DATABASE_URL: "postgresql+asyncpg://postgres:Yuri100100@db:5432/acesso"
     depends_on:
-      - "postgres"
+      - db
     ports:
-      - 8000:8000
-
+      - "8011:8011"
+    restart: always
 
 volumes:
   db-data:
-  test-db-data:

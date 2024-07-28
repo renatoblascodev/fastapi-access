@@ -1,14 +1,16 @@
-  
 FROM python:3.9
 
-RUN mkdir -p /fastapi-app
-WORKDIR /fastapi-app
 
-# Copy files
-COPY ./requirements.txt ./
+# Copia os arquivos de requisitos e instala as dependências
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy folders
+# Copia o código da aplicação para o contêiner
 COPY ./app ./app
 
-# Install packages
-RUN pip install -r requirements.txt
+COPY ./.env ./.env
+
+
+# Define o comando para iniciar a aplicação com as configurações especificadas
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8011"]
+
