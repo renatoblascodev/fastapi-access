@@ -12,7 +12,7 @@
             "args": [
                 "app.main:app",
                 "--reload",
-                "--port=8010",
+                "--port=8011",
                 "--log-config=app/log_conf.yaml"
             ],
             "jinja": true
