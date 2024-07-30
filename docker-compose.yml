@@ -26,7 +26,7 @@ services:
     depends_on:
       - db
     ports:
-      - "8011:8011"
+      - "8012:8011"
     restart: always
 
 volumes:
